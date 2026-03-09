@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"workbench.commandPalette.history": 10,
+	"workbench.tree.indent": 24,
+	"workbench.editor.labelFormat": "short"
+}
