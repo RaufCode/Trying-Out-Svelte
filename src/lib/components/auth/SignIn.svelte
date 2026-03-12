@@ -1,3 +1,39 @@
+<script lang="ts">
+	import { goto } from "$app/navigation";
+	import { login } from "$lib/services/user.services";
+	import  { user } from "$lib/stores/user.store";
+	interface  userCredentials {
+    username: string,
+    password: string
+	}
+
+	const user_credentials: userCredentials = {
+		username: "",
+		password: ""
+	}
+	
+	async function  userLogin () {
+	try {
+		const result = await login(user_credentials);
+		console.log("Login successful:", result);
+		// redirect or update state here
+		user.set(result?.user ?? null);
+		goto("/")
+
+		return result ;
+
+		
+	} catch (err) {
+		console.error("Login failed:", err);
+		return false;
+	}
+	};
+
+
+
+</script>
+
+
 <main class="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
 	<div class="pointer-events-none absolute inset-0">
 		<div
@@ -32,12 +68,13 @@
 					<p class="text-sm text-slate-400">Use your credentials to access your dashboard.</p>
 				</div>
 
-				<form class="mt-8 space-y-5">
+				<form on:submit|preventDefault={userLogin} class="mt-8 space-y-5">
 					<div class="space-y-2">
 						<label for="username" class="text-xs font-medium uppercase tracking-wide text-slate-300"
 							>Username</label
 						>
 						<input
+							bind:value={user_credentials.username}
 							id="username"
 							name="username"
 							type="text"
@@ -51,6 +88,7 @@
 							>Password</label
 						>
 						<input
+							bind:value={user_credentials.password}
 							id="password"
 							name="password"
 							type="password"
@@ -60,7 +98,7 @@
 					</div>
 
 					<button
-						type="button"
+						type="submit"
 						class="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white transition hover:from-cyan-400 hover:to-indigo-400 focus:outline-none focus:ring-2 focus:ring-cyan-300/50"
 					>
 						Sign In
