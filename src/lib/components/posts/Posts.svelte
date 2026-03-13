@@ -95,7 +95,7 @@
 						class="mt-5 flex items-center justify-between border-t border-white/5 pt-4 text-[11px] uppercase tracking-[0.18em] text-slate-500"
 					>
 						<span>User #{post.userId}</span>
-						<span class="text-cyan-300/80">Read More</span>
+						<a href={`/posts/${post.id}`} class="text-cyan-300 hover:underline block cursor-pointer">Read More</a>
 					</div>
 				</article>
 			{/each}
