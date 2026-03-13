@@ -21,6 +21,22 @@
         text.length > max ? `${text.slice(0, max)}...` : text;
 </script>
 
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-4 {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
 <main class="relative min-h-screen w-full overflow-y-auto overflow-x-hidden bg-slate-950 text-slate-100">
 	<div class="pointer-events-none absolute inset-0">
 		<div
@@ -50,55 +66,75 @@
 			</div>
 		</header>
 
-		<section class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each posts as post (post.id)}
-				<article
-					class="group relative flex h-full flex-col rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl shadow-slate-950/40 backdrop-blur transition hover:-translate-y-1 hover:border-cyan-400/40 hover:shadow-cyan-500/10"
-				>
-					<div class="flex items-start justify-between gap-3">
-						<h2 class="text-lg font-semibold leading-snug text-white">{post.title}</h2>
-						<span
-							class="rounded-full border border-white/10 bg-slate-900/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400"
-							>#{post.id}</span
-						>
-					</div>
+        <section class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+            {#each posts as post (post.id)}
+                <a
+                    href={`/posts/${post.id}`}
+                    class="group relative flex h-full flex-col rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl shadow-slate-950/40 backdrop-blur transition hover:-translate-y-1 hover:border-cyan-400/40 hover:shadow-cyan-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400/60"
+                >
+                    <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/80">
+                        <div class="aspect-[16/10] w-full">
+                            <div class="h-full w-full bg-gradient-to-br from-slate-800/70 via-slate-900/60 to-slate-950/80"></div>
+                        </div>
+                        <div class="pointer-events-none absolute inset-0">
+                            <div class="absolute -left-6 top-4 h-16 w-16 rounded-full bg-cyan-500/20 blur-2xl"></div>
+                            <div class="absolute -right-6 bottom-4 h-20 w-20 rounded-full bg-indigo-500/20 blur-2xl"></div>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-4 text-slate-400">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    class="h-7 w-7"
+                                    stroke="currentColor"
+                                    stroke-width="1.6"
+                                >
+                                    <path
+                                        d="M4 6.5C4 5.12 5.12 4 6.5 4h11C18.88 4 20 5.12 20 6.5v11c0 1.38-1.12 2.5-2.5 2.5h-11C5.12 20 4 18.88 4 17.5v-11Z"
+                                    />
+                                    <path d="M8 14.5l2.5-3 3 3.5 2-2.5 2.5 3.5" />
+                                    <circle cx="9" cy="9" r="1.4" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
 
-					<p class="mt-3 text-sm leading-relaxed text-slate-300">
-						{getPreview(post.body)}
-					</p>
+                    <div class="flex items-start justify-between gap-3 pt-5">
+                        <h2 class="line-clamp-2 text-lg font-semibold leading-snug text-white">
+                            {post.title}
+                        </h2>
+                        <span
+                            class="rounded-full border border-white/10 bg-slate-900/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400"
+                            >#{post.id}</span
+                        >
+                    </div>
 
-					<div class="mt-4 flex flex-wrap gap-2">
-						{#each post.tags as tag}
-							<span
-								class="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-200"
-							>
-								{tag}
-							</span>
-						{/each}
-					</div>
+                    <p class="line-clamp-4 mt-3 text-sm leading-relaxed text-slate-300">
+                        {getPreview(post.body, 240)}
+                    </p>
 
-					<div class="mt-6 flex items-center justify-between text-xs text-slate-400">
-						<div class="flex items-center gap-4">
-							<span class="inline-flex items-center gap-2">
-								<span class="h-2 w-2 rounded-full bg-emerald-400/80"></span>
-								{formatNumber(post.reactions.likes)} Likes
-							</span>
-							<span class="inline-flex items-center gap-2">
-								<span class="h-2 w-2 rounded-full bg-rose-400/80"></span>
-								{formatNumber(post.reactions.dislikes)} Dislikes
-							</span>
-						</div>
-						<span class="font-medium text-slate-300">{formatNumber(post.views)} Views</span>
-					</div>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        {#each post.tags as tag}
+                            <span
+                                class="rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-200"
+                            >
+                                {tag}
+                            </span>
+                        {/each}
+                    </div>
 
-					<div
-						class="mt-5 flex items-center justify-between border-t border-white/5 pt-4 text-[11px] uppercase tracking-[0.18em] text-slate-500"
-					>
-						<span>User #{post.userId}</span>
-						<a href={`/posts/${post.id}`} class="text-cyan-300 hover:underline block cursor-pointer">Read More</a>
-					</div>
-				</article>
-			{/each}
-		</section>
+                    <div class="mt-auto pt-6 text-xs text-slate-400">
+                        <span class="inline-flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400/80"></span>
+                            {formatNumber(post.reactions.likes)} Likes
+                        </span>
+                    </div>
+
+                    <div class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                        Read more
+                    </div>
+                </a>
+            {/each}
+        </section>
 	</div>
 </main>
