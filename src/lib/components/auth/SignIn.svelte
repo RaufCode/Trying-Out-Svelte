@@ -11,6 +11,16 @@
 		username: "",
 		password: ""
 	}
+
+	const demoCredentials: userCredentials[] = [
+		{ username: "emilys", password: "emilyspass" },
+		{ username: "sophiab", password: "sophiabpass" }
+	];
+
+	const applyCredentials = (credentials: userCredentials) => {
+		user_credentials.username = credentials.username;
+		user_credentials.password = credentials.password;
+	};
 	
 	async function  userLogin () {
 	try {
@@ -18,7 +28,7 @@
 		console.log("Login successful:", result);
 		// redirect or update state here
 		user.set(result?.user ?? null);
-		goto("/")
+		goto("/posts")
 
 		return result ;
 
@@ -95,6 +105,33 @@
 							placeholder="Enter your password"
 							class="block w-full rounded-xl border border-slate-700 bg-slate-900/70 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
 						/>
+					</div>
+
+					<div class="space-y-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+						<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+							Demo credentials
+						</p>
+						<div class="space-y-3">
+							{#each demoCredentials as credentials}
+								<div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+									<div class="flex flex-col gap-1">
+										<span class="text-slate-400">Username</span>
+										<span class="font-medium text-white">{credentials.username}</span>
+									</div>
+									<div class="flex flex-col gap-1">
+										<span class="text-slate-400">Password</span>
+										<span class="font-medium text-white">{credentials.password}</span>
+									</div>
+									<button
+										type="button"
+										on:click={() => applyCredentials(credentials)}
+										class="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-200 transition hover:border-cyan-400/60 hover:text-white"
+									>
+										Use
+									</button>
+								</div>
+							{/each}
+						</div>
 					</div>
 
 					<button
