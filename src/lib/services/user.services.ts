@@ -9,4 +9,7 @@ export const login = async (user_credentials: user_credentials) => {
     return api.post("/api/login", user_credentials);
 };
 
+export const logout = async () => {
+    return api.post("/api/logout", {});
+};
 

@@ -1,4 +1,8 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { user } from "$lib/stores/user.store";
+    import { logout } from "$lib/services/user.services";
+
     type Post = {
         id: number;
         title: string;
@@ -22,6 +26,17 @@
 
     const getPreview = (text: string, max = 160) =>
         text.length > max ? `${text.slice(0, max)}...` : text;
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Logout failed:", error);
+        } finally {
+            user.set(null);
+            goto("/sign-in");
+        }
+    };
 </script>
 
 <style>
@@ -61,11 +76,20 @@
 				</p>
 			</div>
 
-			<div
-				class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-xs text-slate-300 backdrop-blur"
-			>
-				<span class="font-semibold text-white">{loading ? "..." : posts.length}</span>
-				<span class="uppercase tracking-[0.2em]">Total posts</span>
+			<div class="flex flex-wrap items-center gap-3">
+				<button
+					type="button"
+					on:click={handleLogout}
+					class="inline-flex items-center justify-center rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-100 transition hover:border-rose-300/60 hover:bg-rose-500/20"
+				>
+					Log out
+				</button>
+				<div
+					class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-xs text-slate-300 backdrop-blur"
+				>
+					<span class="font-semibold text-white">{loading ? "..." : posts.length}</span>
+					<span class="uppercase tracking-[0.2em]">Total posts</span>
+				</div>
 			</div>
 		</header>
 
