@@ -2,18 +2,34 @@
 import { PUBLIC_BASE_URL } from "$env/static/public";
 
 
-export const api = {
+const buildUrl = (url: string) => {
+    if (url.startsWith("/api")) {
+        return url;
+    }
 
+
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+        return url;
+    }
+
+    return `${PUBLIC_BASE_URL ?? ""}${url}`;
+};
+
+export const api = {
     get: async (url: string) => {
-        const response = await fetch(`${PUBLIC_BASE_URL}${url}`, {
-            credentials: "include"
-        });
+        const response = await fetch(buildUrl(url)
+           // { credentials: "include" }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Request failed (${response.status})`);
+        }
 
         return response.json();
     },
 
     post: async (url: string, body: object) => {
-        const response = await fetch(`${PUBLIC_BASE_URL}${url}`, {
+        const response = await fetch(buildUrl(url), {
             method: "POST",
             credentials: "include",
             headers: {
@@ -21,6 +37,10 @@ export const api = {
             },
             body: JSON.stringify(body)
         });
+
+        if (!response.ok) {
+            throw new Error(`Request failed (${response.status})`);
+        }
 
         return response.json();
     }
