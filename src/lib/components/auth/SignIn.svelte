@@ -12,6 +12,8 @@
 		password: ""
 	}
 
+	let isLoading = false;
+
 	const demoCredentials: userCredentials[] = [
 		{ username: "emilys", password: "emilyspass" },
 		{ username: "sophiab", password: "sophiabpass" }
@@ -23,20 +25,23 @@
 	};
 	
 	async function  userLogin () {
-	try {
-		const result = await login(user_credentials);
-		console.log("Login successful:", result);
-		// redirect or update state here
-		user.set(result?.user ?? null);
-		goto("/posts")
+		if (isLoading) return;
+		isLoading = true;
 
-		return result ;
+		try {
+			const result = await login(user_credentials);
+			console.log("Login successful:", result);
+			// redirect or update state here
+			user.set(result?.user ?? null);
+			goto("/posts");
 
-		
-	} catch (err) {
-		console.error("Login failed:", err);
-		return false;
-	}
+			return result ;
+		} catch (err) {
+			console.error("Login failed:", err);
+			return false;
+		} finally {
+			isLoading = false;
+		}
 	};
 
 
@@ -78,7 +83,7 @@
 					<p class="text-sm text-slate-400">Use your credentials to access your dashboard.</p>
 				</div>
 
-				<form on:submit|preventDefault={userLogin} class="mt-8 space-y-5">
+				<form on:submit|preventDefault={userLogin} class="mt-8 space-y-5" aria-busy={isLoading}>
 					<div class="space-y-2">
 						<label for="username" class="text-xs font-medium uppercase tracking-wide text-slate-300"
 							>Username</label
@@ -88,6 +93,7 @@
 							id="username"
 							name="username"
 							type="text"
+							required
 							placeholder="your.username"
 							class="block w-full rounded-xl border border-slate-700 bg-slate-900/70 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
 						/>
@@ -102,6 +108,7 @@
 							id="password"
 							name="password"
 							type="password"
+							required
 							placeholder="Enter your password"
 							class="block w-full rounded-xl border border-slate-700 bg-slate-900/70 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
 						/>
@@ -136,12 +143,59 @@
 
 					<button
 						type="submit"
-						class="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white transition hover:from-cyan-400 hover:to-indigo-400 focus:outline-none focus:ring-2 focus:ring-cyan-300/50"
+						disabled={isLoading}
+						class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white transition hover:from-cyan-400 hover:to-indigo-400 focus:outline-none focus:ring-2 focus:ring-cyan-300/50 disabled:cursor-not-allowed disabled:opacity-70"
 					>
-						Sign In
+						{#if isLoading}
+							<span>Signing in</span>
+							<span class="dots" aria-hidden="true">
+								<span class="dot"></span>
+								<span class="dot"></span>
+								<span class="dot"></span>
+							</span>
+						{:else}
+							Sign In
+						{/if}
 					</button>
 				</form>
 			</div>
 		</section>
 	</div>
 </main>
+
+<style>
+	.dots {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 999px;
+		background: currentColor;
+		animation: dot-bounce 1.2s infinite ease-in-out;
+	}
+
+	.dot:nth-child(2) {
+		animation-delay: 0.15s;
+	}
+
+	.dot:nth-child(3) {
+		animation-delay: 0.3s;
+	}
+
+	@keyframes dot-bounce {
+		0%,
+		80%,
+		100% {
+			transform: translateY(0);
+			opacity: 0.4;
+		}
+		40% {
+			transform: translateY(-6px);
+			opacity: 1;
+		}
+	}
+</style>
